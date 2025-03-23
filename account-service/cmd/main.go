@@ -1,15 +1,37 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+
+	"bank-system/account-service/internal/application/ports/input"
+	"bank-system/account-service/internal/infrastructure/adapters/input/rest"
+	"bank-system/account-service/internal/infrastructure/adapters/output/in_memory_db"
 )
 
-func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Account Service is running!")
-	})
+var accountRepo = in_memory_db.NewInMemoryAccountRepository()
+var accountUseCase = input.NewCreateAccountInputPort(accountRepo)
+var accountController = rest.NewAccountController(accountUseCase)
 
-	fmt.Println("Starting Account Service on port 8081...")
-	http.ListenAndServe(":8081", nil)
+func home(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Account service is running!"))
+}
+
+func accountCreate(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		accountController.CreateAccountHandler(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/{$}", home)
+	mux.HandleFunc("/accounts", accountCreate)
+
+	log.Print("Starting Account Service on port 8081...")
+	err := http.ListenAndServe(":8081", mux)
+	log.Fatal(err)
 }
