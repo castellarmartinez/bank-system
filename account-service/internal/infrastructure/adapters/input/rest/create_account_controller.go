@@ -11,6 +11,12 @@ type CreateAccountController struct {
 	useCase usecases.CreateAccountUseCase
 }
 
+type AccountResponse struct {
+	Id      int64   `json:"id"`
+	Name    string  `json:"name"`
+	Balance float64 `json:"balance"`
+}
+
 func NewCreateAccountController(createAccountUseCase usecases.CreateAccountUseCase) *CreateAccountController {
 	return &CreateAccountController{
 		useCase: createAccountUseCase,
@@ -35,6 +41,12 @@ func (a *CreateAccountController) CreateAccountHandler(w http.ResponseWriter, r 
 		return
 	}
 
+	response := AccountResponse{
+		account.Id,
+		account.Name,
+		account.Balance,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(account)
+	json.NewEncoder(w).Encode(response)
 }

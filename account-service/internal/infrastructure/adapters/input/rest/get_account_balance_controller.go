@@ -13,6 +13,10 @@ type GetAccountBalanceController struct {
 	useCase usecases.GetAccountBalanceUseCase
 }
 
+type BalanceResponse struct {
+	Balance float64 `json:"balance"`
+}
+
 func NewGetAccountBalanceController(useCase usecases.GetAccountBalanceUseCase) *GetAccountBalanceController {
 	return &GetAccountBalanceController{
 		useCase: useCase,
@@ -35,6 +39,10 @@ func (a *GetAccountBalanceController) GetAccountBalanceHandler(w http.ResponseWr
 		return
 	}
 
+	response := BalanceResponse{
+		Balance: balance,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(balance)
+	json.NewEncoder(w).Encode(response)
 }
