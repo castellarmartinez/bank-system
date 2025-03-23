@@ -5,7 +5,7 @@ import (
 )
 
 type Account struct {
-	Id      int64
+	ID      int64
 	Name    string
 	Balance float64
 }
@@ -20,7 +20,7 @@ func NewAccount(id int64, name string, balance float64) (*Account, error) {
 	}
 
 	return &Account{
-		Id:      id,
+		ID:      id,
 		Name:    name,
 		Balance: float64(balance),
 	}, nil

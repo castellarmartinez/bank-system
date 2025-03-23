@@ -27,8 +27,8 @@ func (r *InMemoryAccountRepository) Save(account *domain.Account) error {
 		return errors.New("account cannot be null")
 	}
 
-	account.Id = int64(len(r.accounts) + 1)
-	r.accounts[account.Id] = account
+	account.ID = int64(len(r.accounts) + 1)
+	r.accounts[account.ID] = account
 
 	return nil
 }

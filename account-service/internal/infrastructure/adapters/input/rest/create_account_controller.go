@@ -12,7 +12,7 @@ type CreateAccountController struct {
 }
 
 type AccountResponse struct {
-	Id      int64   `json:"id"`
+	ID      int64   `json:"id"`
 	Name    string  `json:"nombre"`
 	Balance float64 `json:"saldo"`
 }
@@ -42,7 +42,7 @@ func (a *CreateAccountController) CreateAccountHandler(w http.ResponseWriter, r 
 	}
 
 	response := AccountResponse{
-		account.Id,
+		account.ID,
 		account.Name,
 		account.Balance,
 	}

@@ -13,8 +13,8 @@ func NewGetAccountBalanceInputPort(repo output.AccountOutputPort) usecases.GetAc
 	return &GetAccountBalanceInputPort{repo: repo}
 }
 
-func (a *GetAccountBalanceInputPort) Execute(id int64) (float64, error) {
-	account, err := a.repo.FindByID(id)
+func (g *GetAccountBalanceInputPort) Execute(id int64) (float64, error) {
+	account, err := g.repo.FindByID(id)
 
 	if err != nil {
 		return 0, err
