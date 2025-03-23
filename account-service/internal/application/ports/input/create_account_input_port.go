@@ -1,28 +1,21 @@
 package input
 
 import (
-	"sync/atomic"
-
 	"bank-system/account-service/internal/application/ports/output"
 	"bank-system/account-service/internal/application/usecases"
 	"bank-system/account-service/internal/domain"
 )
 
 type AccountInputPort struct {
-	repo      output.AccountOutputPort
-	idCounter int64
+	repo output.AccountOutputPort
 }
 
 func NewCreateAccountInputPort(repo output.AccountOutputPort) usecases.CreateAccountUseCase {
-	return &AccountInputPort{repo: repo, idCounter: 0}
-}
-
-func (a *AccountInputPort) nextID() int64 {
-	return atomic.AddInt64(&a.idCounter, 1)
+	return &AccountInputPort{repo: repo}
 }
 
 func (a *AccountInputPort) Execute(name string, balance float64) (*domain.Account, error) {
-	account, err := domain.NewAccount(a.nextID(), name, balance)
+	account, err := domain.NewAccount(0, name, balance) // id is then set in the repository
 
 	if err != nil {
 		return nil, err

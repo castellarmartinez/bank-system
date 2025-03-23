@@ -23,6 +23,8 @@ func (r *InMemoryAccountRepository) Save(account *domain.Account) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	account.Id = int64(len(r.accounts) + 1)
+
 	if account == nil {
 		return errors.New("account cannot be null")
 	}
