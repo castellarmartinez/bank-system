@@ -14,7 +14,7 @@ type GetAccountBalanceController struct {
 }
 
 type BalanceResponse struct {
-	Balance float64 `json:"balance"`
+	Balance float64 `json:"saldo"`
 }
 
 func NewGetAccountBalanceController(useCase usecases.GetAccountBalanceUseCase) *GetAccountBalanceController {

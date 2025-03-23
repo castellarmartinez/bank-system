@@ -13,8 +13,8 @@ type CreateAccountController struct {
 
 type AccountResponse struct {
 	Id      int64   `json:"id"`
-	Name    string  `json:"name"`
-	Balance float64 `json:"balance"`
+	Name    string  `json:"nombre"`
+	Balance float64 `json:"saldo"`
 }
 
 func NewCreateAccountController(createAccountUseCase usecases.CreateAccountUseCase) *CreateAccountController {
@@ -25,8 +25,8 @@ func NewCreateAccountController(createAccountUseCase usecases.CreateAccountUseCa
 
 func (a *CreateAccountController) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Name    string  `json:"name"`
-		Balance float64 `json:"balance"`
+		Name    string  `json:"nombre"`
+		Balance float64 `json:"saldo_inicial"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

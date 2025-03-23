@@ -3,7 +3,6 @@ package input
 import (
 	"bank-system/account-service/internal/application/ports/output"
 	"bank-system/account-service/internal/application/usecases"
-	"errors"
 )
 
 type GetAccountBalanceInputPort struct {
@@ -19,10 +18,6 @@ func (a *GetAccountBalanceInputPort) Execute(id int64) (float64, error) {
 
 	if err != nil {
 		return 0, err
-	}
-
-	if account == nil {
-		return 0, errors.New("account not found")
 	}
 
 	return account.GetBalance(), nil
