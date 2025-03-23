@@ -7,17 +7,17 @@ import (
 	"bank-system/account-service/internal/application/usecases"
 )
 
-type AccountController struct {
-	accountUseCase usecases.CreateAccountUseCase
+type CreateAccountController struct {
+	useCase usecases.CreateAccountUseCase
 }
 
-func NewAccountController(accountUseCase usecases.CreateAccountUseCase) *AccountController {
-	return &AccountController{
-		accountUseCase: accountUseCase,
+func NewCreateAccountController(createAccountUseCase usecases.CreateAccountUseCase) *CreateAccountController {
+	return &CreateAccountController{
+		useCase: createAccountUseCase,
 	}
 }
 
-func (a *AccountController) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
+func (a *CreateAccountController) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name    string  `json:"name"`
 		Balance float64 `json:"balance"`
@@ -28,7 +28,7 @@ func (a *AccountController) CreateAccountHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	account, err := a.accountUseCase.CreateAccount(req.Name, req.Balance)
+	account, err := a.useCase.Execute(req.Name, req.Balance)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

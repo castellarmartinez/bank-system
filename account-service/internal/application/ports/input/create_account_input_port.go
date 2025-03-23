@@ -21,7 +21,7 @@ func (a *AccountInputPort) nextID() int64 {
 	return atomic.AddInt64(&a.idCounter, 1)
 }
 
-func (a *AccountInputPort) CreateAccount(name string, balance float64) (*domain.Account, error) {
+func (a *AccountInputPort) Execute(name string, balance float64) (*domain.Account, error) {
 	account, err := domain.NewAccount(a.nextID(), name, balance)
 
 	if err != nil {

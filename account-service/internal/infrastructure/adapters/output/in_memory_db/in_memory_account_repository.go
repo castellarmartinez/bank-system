@@ -9,13 +9,13 @@ import (
 )
 
 type InMemoryAccountRepository struct {
-	mu    sync.RWMutex
-	store map[int64]*domain.Account
+	mu       sync.RWMutex
+	accounts map[int64]*domain.Account
 }
 
 func NewInMemoryAccountRepository() *InMemoryAccountRepository {
 	return &InMemoryAccountRepository{
-		store: make(map[int64]*domain.Account),
+		accounts: make(map[int64]*domain.Account),
 	}
 }
 
@@ -27,8 +27,21 @@ func (r *InMemoryAccountRepository) Save(account *domain.Account) error {
 		return errors.New("account cannot be null")
 	}
 
-	r.store[account.Id] = account
+	r.accounts[account.Id] = account
 	return nil
+}
+
+func (r *InMemoryAccountRepository) FindByID(id int64) (*domain.Account, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	account, exists := r.accounts[id]
+
+	if !exists {
+		return nil, errors.New("account not found")
+	}
+
+	return account, nil
 }
 
 var _ output.AccountOutputPort = (*InMemoryAccountRepository)(nil)

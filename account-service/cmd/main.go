@@ -10,8 +10,12 @@ import (
 )
 
 var accountRepo = in_memory_db.NewInMemoryAccountRepository()
-var accountUseCase = input.NewCreateAccountInputPort(accountRepo)
-var accountController = rest.NewAccountController(accountUseCase)
+
+var createAccountUseCase = input.NewCreateAccountInputPort(accountRepo)
+var createAccountController = rest.NewCreateAccountController(createAccountUseCase)
+
+var getAccountBalanceUseCase = input.NewGetAccountBalanceInputPort(accountRepo)
+var getAccountBalanceController = rest.NewGetAccountBalanceController(getAccountBalanceUseCase)
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Account service is running!"))
@@ -20,7 +24,16 @@ func home(w http.ResponseWriter, r *http.Request) {
 func accountCreate(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
-		accountController.CreateAccountHandler(w, r)
+		createAccountController.CreateAccountHandler(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func accountGetBalance(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		getAccountBalanceController.GetAccountBalanceHandler(w, r)
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -30,6 +43,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/{$}", home)
 	mux.HandleFunc("/accounts", accountCreate)
+	mux.HandleFunc("/accounts/", accountGetBalance)
 
 	log.Print("Starting Account Service on port 8081...")
 	err := http.ListenAndServe(":8081", mux)
