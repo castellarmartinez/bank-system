@@ -16,6 +16,9 @@ var accountService = httpAdapter.NewAccountHttpAdapter("http://localhost:8081")
 var processTransactionUseCase = input.NewCreateTransactionInputPort(transactionRepo, accountService)
 var processTransactionController = rest.NewProcessTransactionController(processTransactionUseCase)
 
+var listTransactionsUseCase = input.NewGetTransactionsInputPort(transactionRepo)
+var listTransactionsController = rest.NewListTransactionsController(listTransactionsUseCase)
+
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Account service is running!"))
 }
@@ -29,10 +32,20 @@ func transactionProcess(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func transactionsList(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		listTransactionsController.ListTransactionsHandler(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/{$}", home)
 	mux.HandleFunc("/transactions", transactionProcess)
+	mux.HandleFunc("/transactions/", transactionsList)
 
 	log.Print("Starting Account Service on port 8082...")
 	err := http.ListenAndServe(":8082", mux)

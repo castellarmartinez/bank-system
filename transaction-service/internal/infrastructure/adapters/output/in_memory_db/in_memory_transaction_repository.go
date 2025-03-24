@@ -33,4 +33,23 @@ func (r *InMemoryTransactionRepository) Save(transaction *domain.Transaction) er
 	return nil
 }
 
+func (r *InMemoryTransactionRepository) FindByAccountID(accountID int64) ([]*domain.Transaction, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var result []*domain.Transaction
+
+	for _, tx := range r.transactions {
+		if tx.FromAccount == accountID || tx.ToAccount == accountID {
+			result = append(result, tx)
+		}
+	}
+
+	if len(result) == 0 {
+		return nil, errors.New("no transactions found for the account")
+	}
+
+	return result, nil
+}
+
 var _ output.TransactionOutputPort = (*InMemoryTransactionRepository)(nil)
