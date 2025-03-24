@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"bank-system/transaction-service/internal/application/ports/input"
 	"bank-system/transaction-service/internal/application/ports/output"
@@ -10,6 +11,8 @@ import (
 	"bank-system/transaction-service/internal/infrastructure/adapters/input/rest"
 	httpAdapter "bank-system/transaction-service/internal/infrastructure/adapters/output/http"
 	"bank-system/transaction-service/internal/infrastructure/adapters/output/postgresql"
+
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -43,14 +46,27 @@ func transactionsList(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	connStr := "postgres://postgres:David007@localhost:5432/banksystem?sslmode=disable"
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dbSSLMode := os.Getenv("DB_SSLMODE")
+	host := os.Getenv("HOST")
+	serverPort := os.Getenv("SERVER_PORT")
+	accountServicePort := os.Getenv("ACCOUT_SERVICE_PORT")
+
+	connStr := "postgres://" + dbUser + ":" + dbPassword + "@" + host + ":" + dbPort + "/" + dbName + "?sslmode=" + dbSSLMode
 	transactionRepo, err := postgresql.NewPostgresTransactionRepository(connStr)
 
 	if err != nil {
 		log.Fatalf("Failed to initialize PostgreSQL: %v", err)
 	}
 
-	accountService = httpAdapter.NewAccountHttpAdapter("http://localhost:8081")
+	accountService = httpAdapter.NewAccountHttpAdapter("http://" + host + ":" + accountServicePort)
 
 	processTransactionUseCase = input.NewCreateTransactionInputPort(transactionRepo, accountService)
 	processTransactionController = rest.NewProcessTransactionController(processTransactionUseCase)
@@ -63,9 +79,9 @@ func main() {
 	mux.HandleFunc("/transactions", transactionProcess)
 	mux.HandleFunc("/transactions/", transactionsList)
 
-	log.Print("Starting Account Service on port 8082...")
+	log.Print("Starting Account Service on port " + serverPort)
 
-	if err := http.ListenAndServe(":8082", mux); err != nil {
+	if err := http.ListenAndServe(":"+serverPort, mux); err != nil {
 		log.Fatal(err)
 	}
 }

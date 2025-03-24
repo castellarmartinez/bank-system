@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 
 	"bank-system/account-service/internal/application/ports/input"
 	"bank-system/account-service/internal/application/usecases"
@@ -41,7 +44,19 @@ func accountGetBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	connStr := "postgres://postgres:David007@localhost:5432/banksystem?sslmode=disable"
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dbSSLMode := os.Getenv("DB_SSLMODE")
+	host := os.Getenv("HOST")
+	serverPort := os.Getenv("SERVER_PORT")
+
+	connStr := "postgres://" + dbUser + ":" + dbPassword + "@" + host + ":" + dbPort + "/" + dbName + "?sslmode=" + dbSSLMode
 	accountRepo, err := postgres.NewPostgresAccountRepository(connStr)
 
 	if err != nil {
@@ -59,9 +74,9 @@ func main() {
 	mux.HandleFunc("/accounts", accountCreate)
 	mux.HandleFunc("/accounts/", accountGetBalance)
 
-	log.Print("Starting Account Service on port 8081...")
+	log.Print("Starting Account Service on port " + serverPort)
 
-	if err := http.ListenAndServe(":8081", mux); err != nil {
+	if err := http.ListenAndServe(":"+serverPort, mux); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -121,3 +121,6 @@ $RECYCLE.BIN/
 
 bff/node_modules
 bff/.env
+
+account-service/.env
+transaction-service/.env
