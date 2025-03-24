@@ -54,7 +54,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	dbSSLMode := os.Getenv("DB_SSLMODE")
 	host := os.Getenv("HOST")
-	serverPort := os.Getenv("SERVER_PORT")
+	accountServicePort := os.Getenv("ACCOUNT_SERVICE_PORT")
 
 	connStr := "postgres://" + dbUser + ":" + dbPassword + "@" + host + ":" + dbPort + "/" + dbName + "?sslmode=" + dbSSLMode
 	accountRepo, err := postgres.NewPostgresAccountRepository(connStr)
@@ -74,9 +74,9 @@ func main() {
 	mux.HandleFunc("/accounts", accountCreate)
 	mux.HandleFunc("/accounts/", accountGetBalance)
 
-	log.Print("Starting Account Service on port " + serverPort)
+	log.Print("Starting Account Service on port " + accountServicePort)
 
-	if err := http.ListenAndServe(":"+serverPort, mux); err != nil {
+	if err := http.ListenAndServe(":"+accountServicePort, mux); err != nil {
 		log.Fatal(err)
 	}
 }

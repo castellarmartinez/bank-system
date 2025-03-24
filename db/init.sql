@@ -1,0 +1,4 @@
+CREATE DATABASE banksystem;
+
+CREATE USER bank_user WITH ENCRYPTED PASSWORD 'bank_pass';
+GRANT ALL PRIVILEGES ON DATABASE banksystem TO bank_user;

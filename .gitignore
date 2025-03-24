@@ -117,10 +117,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,go,visualstudiocode
+.env
 
 bff/node_modules
-bff/.env
-
-account-service/.env
-transaction-service/.env
+# End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,go,visualstudiocode

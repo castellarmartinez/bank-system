@@ -3,13 +3,14 @@ require("dotenv").config();
 
 const validateJWT = require("../middlewares/auth-middleware");
 
-const ACCOUNT_SERVICE_URL = process.env.ACCOUNT_SERVICE_URL;
+const ACCOUNT_SERVICE_PORT = process.env.ACCOUNT_SERVICE_PORT;
+const HOST = process.env.HOST;
 
 const router = express.Router();
 
 router.post("/", validateJWT, async (req, res) => {
   try {
-    const response = await fetch(`${ACCOUNT_SERVICE_URL}/accounts`, {
+    const response = await fetch(`http://${HOST}:${ACCOUNT_SERVICE_PORT}/accounts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req.body),
@@ -26,7 +27,7 @@ router.post("/", validateJWT, async (req, res) => {
 router.get("/:id", validateJWT, async (req, res) => {
   try {
     const response = await fetch(
-      `${ACCOUNT_SERVICE_URL}/accounts/${req.params.id}`
+      `http://${HOST}:${ACCOUNT_SERVICE_PORT}/accounts/${req.params.id}`
     );
 
     if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);

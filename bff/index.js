@@ -5,7 +5,7 @@ const authRoutes = require("./routes/auth");
 const accountRoutes = require("./routes/accounts");
 const transactionRoutes = require("./routes/transactions");
 
-const PORT = process.env.PORT;
+const PORT = process.env.BFF_SERVICE_PORT;
 
 const app = express();
 app.use(express.json());
