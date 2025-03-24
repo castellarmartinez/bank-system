@@ -46,8 +46,10 @@ func transactionsList(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("ENV") != "production" {
+		if err := godotenv.Load(".env"); err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	dbUser := os.Getenv("DB_USER")
@@ -55,11 +57,16 @@ func main() {
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
 	dbSSLMode := os.Getenv("DB_SSLMODE")
+	dbHost := os.Getenv("DB_HOST")
 	host := os.Getenv("HOST")
 	transactionServicePort := os.Getenv("TRANSACTION_SERVICE_PORT")
 	accountServicePort := os.Getenv("ACCOUNT_SERVICE_PORT")
 
-	connStr := "postgres://" + dbUser + ":" + dbPassword + "@" + host + ":" + dbPort + "/" + dbName + "?sslmode=" + dbSSLMode
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+
+	connStr := "postgres://" + dbUser + ":" + dbPassword + "@" + dbHost + ":" + dbPort + "/" + dbName + "?sslmode=" + dbSSLMode
 	transactionRepo, err := postgresql.NewPostgresTransactionRepository(connStr)
 
 	if err != nil {
