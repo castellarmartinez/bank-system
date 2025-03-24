@@ -14,6 +14,10 @@ type ListTransactionsController struct {
 	useCase usecases.GetTransactionsUseCase
 }
 
+type TransactionsResponseJson struct {
+	Transactions []TransactionsResponse `json:"transactions"`
+}
+
 type TransactionsResponse struct {
 	Status      string  `json:"status"`
 	ID          int64   `json:"transaction_id"`
@@ -45,10 +49,10 @@ func (l *ListTransactionsController) ListTransactionsHandler(w http.ResponseWrit
 		return
 	}
 
-	var response []TransactionsResponse
+	var transactions []TransactionsResponse
 
 	for _, tx := range txs {
-		response = append(response, TransactionsResponse{
+		transactions = append(transactions, TransactionsResponse{
 			tx.Status,
 			tx.ID,
 			tx.FromAccount,
@@ -59,5 +63,7 @@ func (l *ListTransactionsController) ListTransactionsHandler(w http.ResponseWrit
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(TransactionsResponseJson{
+		Transactions: transactions,
+	})
 }

@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"bank-system/account-service/internal/application/ports/input"
+	"bank-system/account-service/internal/application/usecases"
 	"bank-system/account-service/internal/infrastructure/adapters/input/rest"
-	"bank-system/account-service/internal/infrastructure/adapters/output/in_memory_db"
+	postgres "bank-system/account-service/internal/infrastructure/adapters/output/postgresql"
 )
 
-var accountRepo = in_memory_db.NewInMemoryAccountRepository()
+var (
+	createAccountUseCase    usecases.CreateAccountUseCase
+	createAccountController *rest.CreateAccountController
 
-var createAccountUseCase = input.NewCreateAccountInputPort(accountRepo)
-var createAccountController = rest.NewCreateAccountController(createAccountUseCase)
-
-var getAccountBalanceUseCase = input.NewGetAccountBalanceInputPort(accountRepo)
-var getAccountBalanceController = rest.NewGetAccountBalanceController(getAccountBalanceUseCase)
+	getAccountBalanceUseCase    usecases.GetAccountBalanceUseCase
+	getAccountBalanceController *rest.GetAccountBalanceController
+)
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Account service is running!"))
@@ -40,12 +41,27 @@ func accountGetBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	connStr := "postgres://postgres:David007@localhost:5432/banksystem?sslmode=disable"
+	accountRepo, err := postgres.NewPostgresAccountRepository(connStr)
+
+	if err != nil {
+		log.Fatalf("Failed to initialize PostgreSQL: %v", err)
+	}
+
+	createAccountUseCase = input.NewCreateAccountInputPort(accountRepo)
+	createAccountController = rest.NewCreateAccountController(createAccountUseCase)
+
+	getAccountBalanceUseCase = input.NewGetAccountBalanceInputPort(accountRepo)
+	getAccountBalanceController = rest.NewGetAccountBalanceController(getAccountBalanceUseCase)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/{$}", home)
 	mux.HandleFunc("/accounts", accountCreate)
 	mux.HandleFunc("/accounts/", accountGetBalance)
 
 	log.Print("Starting Account Service on port 8081...")
-	err := http.ListenAndServe(":8081", mux)
-	log.Fatal(err)
+
+	if err := http.ListenAndServe(":8081", mux); err != nil {
+		log.Fatal(err)
+	}
 }

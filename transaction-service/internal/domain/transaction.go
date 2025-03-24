@@ -34,7 +34,7 @@ func NewTransaction(id, from, to int64, amount float64) (*Transaction, error) {
 		FromAccount: from,
 		ToAccount:   to,
 		Amount:      amount,
-		Timestamp:   time.Now(),
+		Timestamp:   time.Now().UTC(),
 		Status:      StatusSuccess,
 	}, nil
 }
